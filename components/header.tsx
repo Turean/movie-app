@@ -1,6 +1,14 @@
 import { Clapperboard, Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { redirect } from "next/navigation"
+
+const handleSearch = async function (form: FormData) {
+    "use server"
+
+    const q = form.get("q")
+    redirect(`/search?q=${q}`)
+}
 
 export default function Header() {
     return (
@@ -10,8 +18,8 @@ export default function Header() {
                 Movie App
             </h1>
 
-            <form className="flex gap-2">
-                <Input placeholder="Search..." />
+            <form className="flex gap-2" action={handleSearch}>
+                <Input placeholder="Search..." name="q" />
                 <Button type="submit">
                     <Search />
                 </Button>

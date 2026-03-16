@@ -7,11 +7,15 @@ export default async function Movie({ movie }: { movie: MovieType }) {
     return (
         <div className="w-46 flex flex-col gap-1 text-center">
             <Link href={`/view/${movie.id}`}>
-                <img
-                    className="hover:scale-105 transition-all"
-                    src={posterUrl + movie.poster_path}
-                    alt=""
-                />
+                {movie.poster_path ? (
+                    <img
+                        className="hover:scale-105 transition-all"
+                        src={posterUrl + movie.poster_path}
+                        alt=""
+                    />
+                ) : (
+                    <div className="bg-gray-300 h-69"></div>
+                )}
             </Link>
             <div className="font-bold">
                 <Link href={`/view/${movie.id}`}>{movie.title}</Link>
