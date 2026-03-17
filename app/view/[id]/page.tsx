@@ -1,7 +1,10 @@
-import { MovieType, PersonType } from "@/types/global"
+import { MediaItemType, MediaType, PersonType } from "@/types/global"
 
-async function fetchMovie(id: string): Promise<MovieType> {
-    const res = await fetch(`https://api.themoviedb.org/3/movie/${id}`, {
+async function fetchMedia(
+    id: string,
+    media: MediaType,
+): Promise<MediaItemType> {
+    const res = await fetch(`https://api.themoviedb.org/3/${media}/${id}`, {
         headers: {
             Authorization: `Bearer ${process.env.TMDB_TOKEN}`,
         },
@@ -10,9 +13,9 @@ async function fetchMovie(id: string): Promise<MovieType> {
     return await res.json()
 }
 
-async function fetchCasts(id: string): Promise<PersonType[]> {
+async function fetchCasts(id: string, media: MediaType): Promise<PersonType[]> {
     const res = await fetch(
-        `https://api.themoviedb.org/3/movie/${id}/credits`,
+        `https://api.themoviedb.org/3/${media}/${id}/credits`,
         {
             headers: {
                 Authorization: `Bearer ${process.env.TMDB_TOKEN}`,
@@ -28,19 +31,28 @@ const profileUrl = "http://image.tmdb.org/t/p/w185"
 
 export default async function ViewMovie({
     params,
+    searchParams,
 }: {
     params: Promise<{ id: string }>
+    searchParams: Promise<{ media?: string }>
 }) {
     const { id } = await params
-    const movie = await fetchMovie(id)
-    const casts = await fetchCasts(id)
+    const rawMedia = (await searchParams).media
+    const media: MediaType = rawMedia === "tv" ? "tv" : "movie"
+    const movie = await fetchMedia(id, media)
+    const casts = await fetchCasts(id, media)
+    const title = movie.title ?? movie.name ?? "Untitled"
+    const date = movie.release_date ?? movie.first_air_date
+    const year = date ? date.split("-")[0] : "N/A"
 
     return (
         <div>
             <h2 className="py-3 mb-4 border-b text-2xl font-bold">
-                {movie.title} ({movie.release_date.split("-")[0]})
+                {title} ({year})
             </h2>
-            <img src={backdropUrl + movie.backdrop_path} alt="" />
+            {movie.backdrop_path ? (
+                <img src={backdropUrl + movie.backdrop_path} alt={title} />
+            ) : null}
             <p className="text-xl mt-3 mb-6">{movie.overview}</p>
 
             <h3 className="py-3 mb-4 border-b text-xl font-bold">Casts</h3>

@@ -6,8 +6,15 @@ import { redirect } from "next/navigation"
 const handleSearch = async function (form: FormData) {
     "use server"
 
-    const q = form.get("q")
-    redirect(`/search?q=${q}`)
+    const q = (form.get("q") as string | null)?.trim() ?? ""
+    const mediaParam = form.get("media")
+    const media = mediaParam === "tv" ? "tv" : "movie"
+
+    if (!q) {
+        redirect(`/?media=${media}`)
+    }
+
+    redirect(`/search?q=${encodeURIComponent(q)}&media=${media}`)
 }
 
 export default function Header() {
@@ -20,6 +27,13 @@ export default function Header() {
 
             <form className="flex gap-2" action={handleSearch}>
                 <Input placeholder="Search..." name="q" />
+                <select
+                    name="media"
+                    defaultValue="movie"
+                    className="h-8 rounded-lg border border-input bg-background px-2.5 text-sm">
+                    <option value="movie">Movies</option>
+                    <option value="tv">Series</option>
+                </select>
                 <Button type="submit">
                     <Search />
                 </Button>

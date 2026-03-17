@@ -1,26 +1,36 @@
-import { MovieType } from "@/types/global"
+import { MediaItemType, MediaType } from "@/types/global"
 import Link from "next/link"
 
 const posterUrl = "http://image.tmdb.org/t/p/w185"
 
-export default async function Movie({ movie }: { movie: MovieType }) {
+export default function Movie({
+    movie,
+    media,
+}: {
+    movie: MediaItemType
+    media: MediaType
+}) {
+    const title = movie.title ?? movie.name ?? "Untitled"
+    const date = movie.release_date ?? movie.first_air_date
+    const year = date ? date.split("-")[0] : "N/A"
+
     return (
         <div className="w-46 flex flex-col gap-1 text-center">
-            <Link href={`/view/${movie.id}`}>
+            <Link href={`/view/${movie.id}?media=${media}`}>
                 {movie.poster_path ? (
                     <img
                         className="hover:scale-105 transition-all"
                         src={posterUrl + movie.poster_path}
-                        alt=""
+                        alt={title}
                     />
                 ) : (
                     <div className="bg-gray-300 h-69"></div>
                 )}
             </Link>
             <div className="font-bold">
-                <Link href={`/view/${movie.id}`}>{movie.title}</Link>
+                <Link href={`/view/${movie.id}?media=${media}`}>{title}</Link>
             </div>
-            <span>{movie.release_date.split("-")[0]}</span>
+            <span>{year}</span>
         </div>
     )
 }
