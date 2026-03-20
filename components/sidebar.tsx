@@ -25,7 +25,7 @@ export default async function Sidebar() {
     ])
 
     return (
-        <nav className="w-50 p-4 border-r flex flex-col shrink-0 gap-1">
+        <nav className="h-full min-h-0 w-50 shrink-0 overflow-y-auto overscroll-contain border-r p-4 flex flex-col gap-1">
             <Button variant="outline" asChild>
                 <Link href="/?media=movie" className="justify-start py-5">
                     <Play />
